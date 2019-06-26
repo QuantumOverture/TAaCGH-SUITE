@@ -1,0 +1,3 @@
+- https://stackoverflow.com/questions/6482377/check-existence-of-input-argument-in-a-bash-shell-script
+- linuxcommand.org/lc3_wss0120.php
+- https://ryanstutorials.net/bash-scripting-tutorial/bash-if-statements.php
