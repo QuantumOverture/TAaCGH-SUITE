@@ -12,7 +12,7 @@ then
 	#R --slave --args Research/Data/set < Research/TAaCGH/1_impute_aCGH.R
 	echo "Will you be using the provided parameter file for automatically inputting parameters for the scripts?[Y/N]"
 	read ParameterFileUse
-
+	
 	if [ $ParameterFileUse == 'Y' ]
 	then
 		echo "Parameter File Use Selected" 
@@ -393,10 +393,70 @@ then
 	echo "====================================="
 	echo " "
 
+	#9_mean_diff_perm_NoOut.R
+	echo "Running 9_mean_diff_perm_NoOut.R"
+	if [ $ParameterFileUse == 'Y' ]
+	then    
+		counter=0
+		line=$(sed -n '13 p' parameter.txt)
+		for element in $line
+		do
+	        	if [ $counter -eq 1 ]
+			then
+				dataSet=$element
+			elif [ $counter -eq 2 ]
+			then
+				segLength=$element
+			elif [ $counter -eq 3 ]
+			then
+				phenotype=$element
+			elif [ $counter -eq 4 ]
+			then
+				permutations=$element
+			elif [ $counter -eq 5 ]
+			then
+				sig=$element
+			elif [ $counter -eq 6 ]
+			then
+				seed=$element
+			fi
+			((counter++))
+		done	
+		echo $dataSet $segLength $phenotype $permutations $sig $seed
+	else
+		echo Enter The Value for \" dataSet \"
+		read dataSet
+		echo Enter The Value for \" segLength \"
+		read segLength
+		echo Enter The Value for \" phenotype \"
+		read phenotype
+		echo Enter The Value for \" permutations \"
+		read permutations
+		echo Enter The Value for \" sig \"
+		read sig
+		echo Enter The Value for \" seed \"
+		read seed
+		echo $dataSet $segLength $phenotype $permutations $sig $seed
+	fi
+	echo "Finished 9_mean_diff_perm_NoOut.R"
+	echo "====================================="
+	echo " "
 
+	#10_class_pat_CM.R
+	echo "Running 10_class_pat_CM.R"
+	echo MANUAL
+	echo "Finished 10_class_pat_CM.R"
+	echo "====================================="
+	echo " "
 
+	#11_class_pat_seg.R
+	echo "Running 11_class_pat_seg.R"
+	echo MANUAL
+	echo "Finished 11_class_pat_seg.R"
+	echo "====================================="
+	echo " "
 
-
+	
 	echo "SCRIPTS RUNING PROCESS ENDED"
 
 elif [ $1 == 'Setup' ]

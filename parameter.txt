@@ -8,8 +8,8 @@ EXAMPLE: 15_TAaCGH.py: parameter1 parameter2 parameter3
 4_hom_stats_parts.py: set num1 num2 num3 action 
 5_sig_pcalc_parts.R: param\ test phenotype dataSet partNum action outliers subdir
 6_FDR.R: file parameters phenotype Parts perm sig subdir
-7_vis_curves.R: 
-8_probesFDR.R: 
-9_mean_diff.perm.R: 
+7_vis_curves.R: param phenotype dataSet action subdir 
+8_probesFDR.R: Parameter phenotype dataSet subdir perm sig beeeeessss
+9_mean_diff.perm.R: $dataSet $segLength $phenotype $permutations $sig $seed
 [X]10_class_pat_CM.R: MANUAL
 [X]11_class_pat_seg.R: MANUAL
