@@ -1,3 +1,7 @@
 - https://stackoverflow.com/questions/6482377/check-existence-of-input-argument-in-a-bash-shell-script
 - linuxcommand.org/lc3_wss0120.php
 - https://ryanstutorials.net/bash-scripting-tutorial/bash-if-statements.php
+- https://ryanstutorials.net/bash-scripting-tutorial/bash-input.php
+- https://unix.stackexchange.com/questions/366009/alias-to-cd-in-a-directory-and-call-a-command
+- https://ryanstutorials.net/bash-scripting-tutorial/bash-loops.php
+- https://stackoverflow.com/questions/27056872/how-to-read-n-th-line-from-a-text-file-in-bash
