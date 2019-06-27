@@ -1,13 +1,13 @@
 NOTE: PLEASE DO NOT MOVE ANY LINES AROUND OR CHANGE THE ORDER OF THE LINES. ALSO, PLEASE PUT A SPACE BETWEEN EACH PARAMETER AND THE COLONS OF EACH LINE INDICATOR!
 EXAMPLE: 15_TAaCGH.py: parameter1 parameter2 parameter3
 
-1_impute_aCGH.R: 
-2_cgh_dictionary_cytoband.R: 
-3_Transposed_aCGH.R: 
-3b_dist_Q05.R: 
-4_hom_stats_parts.py: 
-5_sig_pcalc_parts.R: 
-6_FDR.R: 
+1_impute_aCGH.R: Set
+2_cgh_dictionary_cytoband.R: dataSet numParts action segLength subdir 
+3_Transposed_aCGH.R: Set 
+3b_dist_Q05.R: dataSet arms
+4_hom_stats_parts.py: set num1 num2 num3 action 
+5_sig_pcalc_parts.R: param\ test phenotype dataSet partNum action outliers subdir
+6_FDR.R: file parameters phenotype Parts perm sig subdir
 7_vis_curves.R: 
 8_probesFDR.R: 
 9_mean_diff.perm.R: 
