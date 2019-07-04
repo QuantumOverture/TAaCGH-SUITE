@@ -1,5 +1,49 @@
 #!/bin/bash
 
+GetParameter(){
+
+
+	line=$(sed -n "$1 p" parameter.txt)
+
+	counter=0
+	for element in $line
+	do
+		if [ $counter -ne 0 ]
+		then
+		arr[$counter]=$element
+		fi
+		((counter++))
+	done
+	
+	if [ $2 == "4_hom_stars_parts.py" ]
+	then
+		echo "(cd Research/TAaCGH && python 4_hom_stats_parts.py ${arr[@]})"
+	else
+		echo "(cd Research/TAaCGH && R --slave --args ${arr[@]} < $2)"
+	fi
+
+}
+
+GetInput(){
+
+ exect=$1
+ counter=0
+ shift
+ 
+ while [ $# -gt 0 ]
+ do	
+	echo Enter the value for the Parameter \" $1 \"
+	read arr[$counter]
+	((counter++))
+	shift
+ done
+
+echo ./$exect ${arr[@]}
+
+}
+
+
+
 if [ $# -eq 0 ]
 then
 	echo "No Command Entered! [VALID COMMANDS ARE : Setup , Clean, and Run]"
@@ -24,21 +68,9 @@ then
 	echo "Running 1_impute_aCGH.R"
 	if [ $ParameterFileUse == 'Y' ]
 	then    
-		counter=0
-		line=$(sed -n '4 p' parameter.txt)
-		for element in $line
-		do
-	        	if [ $counter -eq 1 ]
-			then
-				set=$element
-			fi
-			((counter++))
-		done	
-		echo $set
+		GetParameter "4" "1_impute_aCGH.R"
 	else
-		echo Enter The Value for \" Set \"
-		read set
-		echo $set
+		GetInput "1_impute_aCGH.R" "set"
 	fi
 	echo "Finished Running 1_impute_aCGH.R"
 	echo "====================================="
@@ -47,42 +79,10 @@ then
 	#2_cgh_dictionary_cytoband.R
 	echo "Running 2_cgh_dictionary_cytoband.R"
 	if [ $ParameterFileUse == 'Y' ]
-	then    
-		counter=0
-		line=$(sed -n '5 p' parameter.txt)
-		for element in $line
-		do
-	        	if [ $counter -eq 1 ]
-			then
-				dataSet=$element
-			elif [ $counter -eq 2 ]
-			then
-				numParts=$element
-			elif [ $counter -eq 3 ]
-			then
-				action=$element
-			elif [ $counter -eq 4 ]
-			then
-				segLength=$element
-			elif [ $counter -eq 5 ]
-			then
-				subdir=$element
-			fi
-			((counter++))
-		done	
-		echo $dataSet $numParts $action $segLength $subdir 
+	then
+		GetParameter "5" "2_cgh_dictionary.R"	
 	else
-		echo Enter The Value for \" DataSet \"
-		read dataSet
-		echo Enter The Value for \" numParts \"
-		read numParts
-		echo Enter The Value for \" action \"
-		read action
-		echo Enter The Value for \" seglength \"
-		read segLength
-		echo Enter The Value for \" subdir \"
-		read subdir
-		echo $dataSet $numParts $action $segLength $subdir
+		GetInput "2_cgh_dictionary.R" "dataSet" "numParts" "action" "segLength" "subdir"
 	fi
 	echo "Finished 2_cgh_dictionary_cytoband.R"
 	echo "====================================="
@@ -91,22 +91,10 @@ then
 	#3_Transposed_aCGH.R
 	echo "Running 3_Transposed_aCGH.R"
 	if [ $ParameterFileUse == 'Y' ]
-	then    
-		counter=0
-		line=$(sed -n '6 p' parameter.txt)
-		for element in $line
-		do
-	        	if [ $counter -eq 1 ]
-			then
-				set=$element
-			fi
-			((counter++))
-		done	
-		echo $set
+	then
+	     GetParameter "6" "3_Transposed_aCGH.R"	
 	else
-		echo Enter The Value for \" Set \"
-		read set
-		echo $set
+		GetInput "3_Transposed_aCGH.R" "set"
 	fi
 	echo "Finished Running 3_Transposed_aCGH.R"
 	echo "====================================="
@@ -115,28 +103,10 @@ then
 	#3b_dist_Q05.R
 	echo "Running 3b_dist_Q05.R"
 	if [ $ParameterFileUse == 'Y' ]
-	then    
-		counter=0
-		line=$(sed -n '7 p' parameter.txt)
-		for element in $line
-		do
-	        	if [ $counter -eq 1 ]
-			then
-				dataSet=$element
-			elif [ $counter -eq 2 ]
-			then
-				arms=$element
-			fi
-			((counter++))
-		done	
-		echo $dataSet $arms
+	then
+		GetParameter "7" "3b_dist_Q05.R"	
 	else
-		echo Enter The Value for \" DataSet \"
-		read dataSet
-		echo $dataSet
-		echo Enter The Value for \" Arms \"
-		read arms
-		echo $arms
+		GetInput "3b_dist_Q05.R" "dataSet" "arms"
 		
 	fi
 	echo "Finished Running 3b_dist_Q05.R"
@@ -146,42 +116,10 @@ then
 	#4_hom_stats_parts.py
 	echo "Running 4_hom_stats_parts.py"
 	if [ $ParameterFileUse == 'Y' ]
-	then    
-		counter=0
-		line=$(sed -n '8 p' parameter.txt)
-		for element in $line
-		do
-	        	if [ $counter -eq 1 ]
-			then
-				set=$element
-			elif [ $counter -eq 2 ]
-			then
-				num1=$element
-			elif [ $counter -eq 3 ]
-			then
-				num2=$element
-			elif [ $counter -eq 4 ]
-			then
-				num3=$element
-			elif [ $counter -eq 5 ]
-			then
-				action=$element
-			fi
-			((counter++))
-		done	
-		echo $set $num1 $num2 $num3 $action 
+	then
+		GetParameter "8" "4_hom_stars_parts.py"
 	else
-		echo Enter The Value for \" set \"
-		read set
-		echo Enter The Value for \" num1 \"
-		read num1
-		echo Enter The Value for \" num2 \"
-		read num2
-		echo Enter The Value for \" num3 \"
-		read num3
-		echo Enter The Value for \" action \"
-		read action
-		echo $set $num1 $num2 $num3 $action
+		GetInput "4_hom_stars_parts.py" "set" "num1" "num2" "num3" "action"
 	fi
 	echo "Finished 4_hom_stats_parts.py"
 	echo "====================================="
@@ -190,36 +128,8 @@ then
 	#5_sig_pcalc_parts.R
 	echo "Running 5_sig_pcalc_parts.R"
 	if [ $ParameterFileUse == 'Y' ]
-	then    
-		counter=0
-		line=$(sed -n '9 p' parameter.txt)
-		for element in $line
-		do
-	        	if [ $counter -eq 1 ]
-			then
-				param=$element
-			elif [ $counter -eq 2 ]
-			then
-				phenotype=$element
-			elif [ $counter -eq 3 ]
-			then
-				dataSet=$element
-			elif [ $counter -eq 4 ]
-			then
-				partNum=$element
-			elif [ $counter -eq 5 ]
-			then
-				action=$element
-			elif [ $counter -eq 6 ]
-			then
-				outliers=$element
-			elif [ $counter -eq 7 ]
-			then
-				subdir=$element
-			fi
-			((counter++))
-		done	
-		echo $param $phenotype $dataSet $partNum $action $outliers $subdir
+	then
+		GetParameter "9" "5_sig_pcalc_parts.R"	
 	else
 		echo Enter The Value for \" param \"
 		read param
@@ -244,36 +154,8 @@ then
 	#6_FDR.R
 	echo "Running 6_FDR.R"
 	if [ $ParameterFileUse == 'Y' ]
-	then    
-		counter=0
-		line=$(sed -n '10 p' parameter.txt)
-		for element in $line
-		do
-	        	if [ $counter -eq 1 ]
-			then
-				file=$element
-			elif [ $counter -eq 2 ]
-			then
-				Parameter=$element
-			elif [ $counter -eq 3 ]
-			then
-				phenotype=$element
-			elif [ $counter -eq 4 ]
-			then
-				Parts=$element
-			elif [ $counter -eq 5 ]
-			then
-				perm=$element
-			elif [ $counter -eq 6 ]
-			then
-				sig=$element
-			elif [ $counter -eq 7 ]
-			then
-				subdir=$element
-			fi
-			((counter++))
-		done	
-		echo $file $parameters $phenotype $Parts $perm $sig $subdir
+	then
+		GetParameter "10" "6_FDR.R"
 	else
 		echo Enter The Value for \" file \"
 		read file
@@ -298,30 +180,8 @@ then
 	#7_vis_curves.R
 	echo "Running 7_vis_curves.R"
 	if [ $ParameterFileUse == 'Y' ]
-	then    
-		counter=0
-		line=$(sed -n '11 p' parameter.txt)
-		for element in $line
-		do
-	        	if [ $counter -eq 1 ]
-			then
-				param=$element
-			elif [ $counter -eq 2 ]
-			then
-				phenotype=$element
-			elif [ $counter -eq 3 ]
-			then
-				dataSet=$element
-			elif [ $counter -eq 4 ]
-			then
-				action=$element
-			elif [ $counter -eq 5 ]
-			then
-				subdir=$element
-			fi
-			((counter++))
-		done	
-		echo $param $phenotype $dataSet $action $subdir
+	then
+		GetParameter "11" "7_vis_curves.R"	
 	else
 		echo Enter The Value for \" param \"
 		read param
@@ -342,36 +202,8 @@ then
 	#8_probesFDR.R
 	echo "Running 8_probesFDR.R"
 	if [ $ParameterFileUse == 'Y' ]
-	then    
-		counter=0
-		line=$(sed -n '12 p' parameter.txt)
-		for element in $line
-		do
-	        	if [ $counter -eq 1 ]
-			then
-				Parameter=$element
-			elif [ $counter -eq 2 ]
-			then
-				phenotype=$element
-			elif [ $counter -eq 3 ]
-			then
-				dataSet=$element
-			elif [ $counter -eq 4 ]
-			then
-				subdir=$element
-			elif [ $counter -eq 5 ]
-			then
-				perm=$element
-			elif [ $counter -eq 6 ]
-			then
-				sig=$element
-			elif [ $counter -eq 7 ]
-			then
-				seed=$element
-			fi
-			((counter++))
-		done	
-		echo $Parameter $phenotype $dataSet $subdir $perm $sig $seed
+	then
+		 GetParameter "12" "8_probesFDR.R"	
 	else
 		echo Enter The Value for \" file \"
 		read file
@@ -396,33 +228,8 @@ then
 	#9_mean_diff_perm_NoOut.R
 	echo "Running 9_mean_diff_perm_NoOut.R"
 	if [ $ParameterFileUse == 'Y' ]
-	then    
-		counter=0
-		line=$(sed -n '13 p' parameter.txt)
-		for element in $line
-		do
-	        	if [ $counter -eq 1 ]
-			then
-				dataSet=$element
-			elif [ $counter -eq 2 ]
-			then
-				segLength=$element
-			elif [ $counter -eq 3 ]
-			then
-				phenotype=$element
-			elif [ $counter -eq 4 ]
-			then
-				permutations=$element
-			elif [ $counter -eq 5 ]
-			then
-				sig=$element
-			elif [ $counter -eq 6 ]
-			then
-				seed=$element
-			fi
-			((counter++))
-		done	
-		echo $dataSet $segLength $phenotype $permutations $sig $seed
+	then
+	     GetParameter "13" "9_mean_diff_perm_NoOut.R"	
 	else
 		echo Enter The Value for \" dataSet \"
 		read dataSet
