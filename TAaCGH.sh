@@ -10,14 +10,28 @@ GetParameter(){
 	do
 		if [ $counter -ne 0 ]
 		then
-		arr[$counter]=$element
+			arr[$counter]=$element
 		fi
 		((counter++))
 	done
 	
 	if [ $2 == "4_hom_stars_parts.py" ]
 	then
-		echo "(cd Research/TAaCGH && python 4_hom_stats_parts.py ${arr[@]})"
+		script4=($(sed -n "16 p" parameter.txt))
+		while [ $((${script4[1]})) -gt 0 ]
+		do
+			echo "(cd Research/TAaCGH && python 4_hom_stats_parts.py ${arr[@]})"
+			((script4[1]--))
+		done
+	elif [ $2 == "5_sig_pcalc_parts.R" ] 
+	then
+		script5=($(sed -n "17 p" parameter.txt))
+		while [ $((${script5[1]})) -gt 0 ]
+		do
+			echo "(cd Research/TAaCGH && R --slave --args ${arr[@]} < $2)"	
+			((script5[1]--))
+		done
+
 	else
 		echo "(cd Research/TAaCGH && R --slave --args ${arr[@]} < $2)"
 	fi
@@ -38,7 +52,13 @@ GetInput(){
 	shift
  done
 
-echo ./$exect ${arr[@]}
+if [ $exect == "4_hom_stars_parts.py" ]
+then
+	echo "(cd Research/TAaCGH && python 4_hom_stats_parts.py ${arr[@]})"
+else
+	echo "(cd Research/TAaCGH && R --slave --args ${arr[@]} < $exect)"
+fi
+
 
 }
 
@@ -51,8 +71,8 @@ elif [ $1 == 'Run' ]
 then
 	echo "SCRIPT RUNNING PROCESS STARTED"
 	echo "NOTE: the 10th and 11th scripts require manual input. To exit now(so you can edit them) --> Ctrl + z."
-	# Add running prompts and advisory note in parameter file
 	# Don't forget that some scripts run more than once (i.e add more parameters)
+	# Add Inner Program File Setup
 	#R --slave --args Research/Data/set < Research/TAaCGH/1_impute_aCGH.R
 	echo "Will you be using the provided parameter file for automatically inputting parameters for the scripts?[Y/N]"
 	read ParameterFileUse
@@ -131,21 +151,7 @@ then
 	then
 		GetParameter "9" "5_sig_pcalc_parts.R"	
 	else
-		echo Enter The Value for \" param \"
-		read param
-		echo Enter The Value for \" phenotype \"
-		read phenotype
-		echo Enter The Value for \" dataSet \"
-		read dataSet
-		echo Enter The Value for \" partNum \"
-		read partNum
-		echo Enter The Value for \" action \"
-		read action
-		echo Enter The Value for \" outliers \"
-		read outliers
-		echo Enter The Value for \" subdir \"
-		read subdir
-		echo $param $phenotype $dataSet $partNum $action $outliers $subdir
+		GetInput "5_sig_pcalc_parts.R" "param" "phenotype" "dataSet" "partNum" "action" "outliers" "subdir"
 	fi
 	echo "Finished 5_sig_pcalc_parts.R"
 	echo "====================================="
@@ -157,21 +163,7 @@ then
 	then
 		GetParameter "10" "6_FDR.R"
 	else
-		echo Enter The Value for \" file \"
-		read file
-		echo Enter The Value for \" Parameter \"
-		read Parameter
-		echo Enter The Value for \" phenotype \"
-		read phenotype
-		echo Enter The Value for \" Parts \"
-		read Parts
-		echo Enter The Value for \" perm \"
-		read perm
-		echo Enter The Value for \" sig \"
-		read sig
-		echo Enter The Value for \" subdir \"
-		read subdir
-		echo $file $parameters $phenotype $Parts $perm $sig $subdir
+		GetInput "6_FDR.R" "file" "parameters" "phenotype" "Parts" "perm" "sig" "subdir"
 	fi
 	echo "Finished 6_FDR.R"
 	echo "====================================="
@@ -183,17 +175,7 @@ then
 	then
 		GetParameter "11" "7_vis_curves.R"	
 	else
-		echo Enter The Value for \" param \"
-		read param
-		echo Enter The Value for \" phenotype \"
-		read phenotype
-		echo Enter The Value for \" dataSet \"
-		read dataSet
-		echo Enter The Value for \" action \"
-		read action
-		echo Enter The Value for \" subdir \"
-		read subdir
-		echo $param $phenotype $dataSet $action $subdir
+		GetInput "7_vis_curves.R" "param" "phenotype" "dataSet" "action" "subdir"
 	fi
 	echo "Finished 7_vis_curves.R"
 	echo "====================================="
@@ -205,21 +187,7 @@ then
 	then
 		 GetParameter "12" "8_probesFDR.R"	
 	else
-		echo Enter The Value for \" file \"
-		read file
-		echo Enter The Value for \" Parameter \"
-		read Parameter
-		echo Enter The Value for \" phenotype \"
-		read phenotype
-		echo Enter The Value for \" Parts \"
-		read Parts
-		echo Enter The Value for \" perm \"
-		read perm
-		echo Enter The Value for \" sig \"
-		read sig
-		echo Enter The Value for \" subdir \"
-		read subdir
-		echo $Parameter $phenotype $dataSet $subdir $perm $sig $seed
+		GetInput "8_probesFDR.R" "Parameter" "phenotype" "dataSet" "subdir" "perm" "sig" "seed"
 	fi
 	echo "Finished 8_probesFDR.R"
 	echo "====================================="
@@ -229,21 +197,9 @@ then
 	echo "Running 9_mean_diff_perm_NoOut.R"
 	if [ $ParameterFileUse == 'Y' ]
 	then
-	     GetParameter "13" "9_mean_diff_perm_NoOut.R"	
+		GetParameter "13" "9_mean_diff_perm_NoOut.R"	
 	else
-		echo Enter The Value for \" dataSet \"
-		read dataSet
-		echo Enter The Value for \" segLength \"
-		read segLength
-		echo Enter The Value for \" phenotype \"
-		read phenotype
-		echo Enter The Value for \" permutations \"
-		read permutations
-		echo Enter The Value for \" sig \"
-		read sig
-		echo Enter The Value for \" seed \"
-		read seed
-		echo $dataSet $segLength $phenotype $permutations $sig $seed
+		GetInput "9_mean_diff_perm_NoOut.R" "dataSet" "segLength" "phenotype" "permutations" "sig" "seed"
 	fi
 	echo "Finished 9_mean_diff_perm_NoOut.R"
 	echo "====================================="

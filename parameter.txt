@@ -5,7 +5,7 @@ EXAMPLE: 15_TAaCGH.py: parameter1 parameter2 parameter3
 2_cgh_dictionary_cytoband.R: dataSet numParts action segLength subdir 
 3_Transposed_aCGH.R: Set 
 3b_dist_Q05.R: dataSet arms
-4_hom_stats_parts.py: set num1 num2 num3 action 
+4_hom_stats_parts.py: set num1 num2 num3 action
 5_sig_pcalc_parts.R: param\ test phenotype dataSet partNum action outliers subdir
 6_FDR.R: file parameters phenotype Parts perm sig subdir
 7_vis_curves.R: param phenotype dataSet action subdir 
@@ -13,3 +13,5 @@ EXAMPLE: 15_TAaCGH.py: parameter1 parameter2 parameter3
 9_mean_diff.perm.R: $dataSet $segLength $phenotype $permutations $sig $seed
 [X]10_class_pat_CM.R: MANUAL
 [X]11_class_pat_seg.R: MANUAL
+Script_4_run: 3
+Script_5_run: 3
