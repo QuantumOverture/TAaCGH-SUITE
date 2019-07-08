@@ -1,5 +1,123 @@
 #!/bin/bash
 
+MakeNewFile(){
+
+# Clear away previous file
+rm Parameter.txt
+
+echo NOTE: PLEASE DO NOT MOVE ANY LINES AROUND OR CHANGE THE ORDER OF THE LINES. ALSO, PLEASE PUT A SPACE BETWEEN EACH PARAMETER AND THE COLONS OF EACH LINE INDICATOR! >> Parameter.txt
+echo EXAMPLE: 15_TAaCGH.py: parameter1 parameter2 parameter3 >> Parameter.txt
+echo " " >> Parameter.txt
+
+Line_Headers=("1_impute_aCGH.R:" "2_cgh_dictionary_cytoband.R:" "3_Transposed_aCGH.R:"
+"3b_dist_Q05.R:" "4_hom_stats_parts.py:" "5_sig_pcalc_parts.R:" "6_FDR.R:" "7_vis_curves.R:"
+"8_probesFDR.R:" "9_mean_diff.perm.R:" "10_class_pat_CM.R:" "11_class_pat_seg.R:" "Script_4_run:"
+"Script_5_run:");
+
+Info_For_Headers=("Set" "dataSet numParts action segLength subdir" "Set" "dataSet arms" "dataSet homDim partNum epsIncr action" "param phenotype dataSet partNum action outliers subdir" "file Parameter phenotype Parts perm sig subdir"
+"param phenotype dataSet action subdir" "Parameter phenotype Name_of_dataSet subdir perm sig seed" "dataSet segLength phenotype permutations sig seed"
+"Manual" "Manual" "num" "num");
+
+
+
+counter=0
+for i in ${Line_Headers[@]}
+do
+	if [ $i != "10_class_pat_CM.R:" ] && [ $i != "11_class_pat_seg.R:" ]
+	then
+		echo "Enter parameters for $i"
+		echo "In the following format: ${Info_For_Headers[$counter]}"
+		read InputForLine[$counter]
+		echo $i ${InputForLine[$counter]} >> Parameter.txt
+	else
+		echo $i MANUAL >> Parameter.txt
+	fi
+	((counter++))
+done
+
+
+}
+
+ChangeSpecificLine(){
+
+Line_Headers=("1_impute_aCGH.R:" "2_cgh_dictionary_cytoband.R:" "3_Transposed_aCGH.R:"
+"3b_dist_Q05.R:" "4_hom_stats_parts.py:" "5_sig_pcalc_parts.R:" "6_FDR.R:" "7_vis_curves.R:"
+"8_probesFDR.R:" "9_mean_diff.perm.R:" "10_class_pat_CM.R:" "11_class_pat_seg.R:" "Script_4_run:"
+"Script_5_run:");
+
+Info_For_Headers=("Set" "dataSet numParts action segLength subdir" "Set" "dataSet arms" "dataSet homDim partNum epsIncr action" "param phenotype dataSet partNum action
+outliers subdir" "file Parameter phenotype Parts perm sig subdir"
+"param phenotype dataSet action subdir" "Parameter phenotype Name_of_dataSet subdir perm sig seed" "dataSet segLength phenotype permutations sig seed"
+"Manual" "Manual" "num" "num");
+
+if [ ! -f Parameter.txt ]; then
+	echo "Parameter.txt not found! Please choose the \"Entire File Rewrite Option\"."
+	return 1
+fi
+
+echo "Please specify which of the following lines you would like to edit"
+counter=4
+for i in ${Line_Headers[@]}
+do
+	if [ $i != "10_class_pat_CM.R:" ] || [ $i != "11_class_pat_seg.R:" ]
+	then
+		echo $counter - $i
+	else
+		echo 10_class_pat_CM.R and 11_class_pat_seg.R require manual operation
+	fi
+	((counter++))
+done
+
+read line_num
+if [ $line_num -gt 17 ] || [ $line_num -lt 4 ]
+then
+	echo "Must be between 4 and 17 [Inclusive]"
+	return 1
+fi
+
+echo Enter the parameter for the selected line in the following format:
+echo ${Info_For_Headers[$(($line_num-4))]}
+read NewParameters
+
+NewParameters="${Line_Headers[$(($line_num-4))]} $NewParameters"
+
+sed -i "${line_num}s/.*/$NewParameters/" Parameter.txt
+
+
+}
+
+GetFileInput(){
+
+if [ -f Parameter.txt ]; then
+	cat Parameter.txt
+fi
+echo " "
+dne="f"
+
+while [ $dne != 't' ]
+do
+	echo "Would you like to edit a specfic line or rewrite the entire parameter file?"
+	echo "Type \"S\" for Specific Line"
+	echo "Type \"W\" for entire file rewrite"
+
+	read choice
+	
+	if [ $choice == "S" ]
+	then
+		ChangeSpecificLine
+	elif [ $choice == "W" ]
+	then
+		MakeNewFile
+	fi
+
+	echo "Continue file modification?[ \"t\" for no \"f\" for yes]"
+	read dne
+
+done
+
+}
+
+
 GetParameter(){
 
 
@@ -21,6 +139,7 @@ GetParameter(){
 		while [ $((${script4[1]})) -gt 0 ]
 		do
 			echo "(cd Research/TAaCGH && python 4_hom_stats_parts.py ${arr[@]})"
+			(cd Research/TAaCGH && python 4_hom_stats_parts.py ${arr[@]})
 			((script4[1]--))
 		done
 	elif [ $2 == "5_sig_pcalc_parts.R" ] 
@@ -28,12 +147,14 @@ GetParameter(){
 		script5=($(sed -n "17 p" parameter.txt))
 		while [ $((${script5[1]})) -gt 0 ]
 		do
-			echo "(cd Research/TAaCGH && R --slave --args ${arr[@]} < $2)"	
+			echo "(cd Research/TAaCGH && R --slave --args ${arr[@]} < $2)"
+			(cd Research/TAaCGH && R --slave --args ${arr[@]} < $2)	
 			((script5[1]--))
 		done
 
 	else
 		echo "(cd Research/TAaCGH && R --slave --args ${arr[@]} < $2)"
+		(cd Research/TAaCGH && R --slave --args ${arr[@]} < $2)
 	fi
 
 }
@@ -55,24 +176,23 @@ GetInput(){
 if [ $exect == "4_hom_stars_parts.py" ]
 then
 	echo "(cd Research/TAaCGH && python 4_hom_stats_parts.py ${arr[@]})"
+	(cd Research/TAaCGH && python 4_hom_stats_parts.py ${arr[@]})
 else
 	echo "(cd Research/TAaCGH && R --slave --args ${arr[@]} < $exect)"
+	(cd Research/TAaCGH && R --slave --args ${arr[@]} < $exect)
 fi
 
 
 }
 
-
-
 if [ $# -eq 0 ]
 then
-	echo "No Command Entered! [VALID COMMANDS ARE : Setup , Clean, and Run]"
+	echo "NO COMMANDS ENTERED! VALID COMMANDS ARE: File,Setup,Run,AND Clear"
 elif [ $1 == 'Run' ]
 then
 	echo "SCRIPT RUNNING PROCESS STARTED"
 	echo "NOTE: the 10th and 11th scripts require manual input. To exit now(so you can edit them) --> Ctrl + z."
-	# Don't forget that some scripts run more than once (i.e add more parameters)
-	# Add Inner Program File Setup
+	# Add Inner Program File Setup  --> Creates and setups Parameter.txt
 	#R --slave --args Research/Data/set < Research/TAaCGH/1_impute_aCGH.R
 	echo "Will you be using the provided parameter file for automatically inputting parameters for the scripts?[Y/N]"
 	read ParameterFileUse
@@ -278,13 +398,25 @@ then
 	cp TAaCGH-master_June_24_2019/ind_prof_origpat_local.R Research/TAaCGH
 	cp TAaCGH-master_June_24_2019/vis_avg_betti_curves.R Research/TAaCGH
 	#cp TAaCGH-master_June_24_2019/ Research/TAaCGH
+	
+	touch Parameter.txt
+	echo "Would you like to setup your parameter file?[y( is yes)/n( is no)]"
+	read choice
+	if [ $choice == "y" ]
+	then
+		MakeNewFile
+	fi
 	echo "SET UP SUCCESSFUL"
 elif [ $1 == 'Clear' ]
 then
 	echo "DELETION STARTED"
 	# ADD Deletion property of exposed files
 	rm -R -f Research
+	rm Parameter.txt
 	echo "DELETION SUCCESSFUL"
+elif [ $1 == 'File' ]
+then
+	GetFileInput
 else
 	echo "$1 is an INVALID COMMAND! [VALID COMMANDS ARE : Setup , Clean, and Run]"
 fi
